@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --bg-dark: #121212;
+            --bg-card: #1E1E1E;
+            --text-primary: #ffffff;
+            --text-secondary: #B0B0B0;
+            --border-color: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .section {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Task List Styles */
+        .todo-list input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .todo-list button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .todo-list button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .todo-list ul {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .todo-list li {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            background-color: var(--bg-dark);
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .todo-list li:hover {
+            background-color: #1a1a1a;
+        }
+
+        .todo-list li input[type="checkbox"] {
+            margin-right: 1rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Calculator Styles */
+        .calculator input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            text-align: right;
+        }
+
+        .calculator .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calculator button {
+            padding: 1rem;
+            font-size: 1.2rem;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calculator button:hover {
+            background-color: var(--primary-color);
+            transform: scale(0.98);
+        }
+
+        /* Notes Styles */
+        .sticky-notes .ql-toolbar {
+            background-color: var(--bg-dark);
+            border-radius: 6px 6px 0 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .sticky-notes .ql-container {
+            background-color: var(--bg-dark);
+            border-radius: 0 0 6px 6px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            height: 300px;
+        }
+
+        .ql-snow.ql-toolbar button:hover,
+        .ql-snow .ql-toolbar button:hover {
+            color: var(--primary-color);
+        }
+
+        .ql-editor {
+            color: var(--text-primary);
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Task Manager Pro</h1>
+    </header>
+    
+    <div class="container">
+        <div class="section todo-list">
+            <h2>Tasks</h2>
+            <input type="text" id="taskInput" placeholder="What needs to be done?">
+            <button onclick="addTask()">Add Task</button>
+            <ul id="taskList"></ul>
+            <button onclick="completeSelected()">Complete Selected Tasks</button>
+        </div>
+
+        <div class="section calculator">
+            <h2>Calculator</h2>
+            <input type="text" id="calculatorInput" readonly>
+            <div class="buttons">
+                <button onclick="clearCalculator()">C</button>
+                <button onclick="appendToCalculator('/')">/</button>
+                <button onclick="appendToCalculator('*')">×</button>
+                <button onclick="appendToCalculator('-')">-</button>
+                <button onclick="appendToCalculator('7')">7</button>
+                <button onclick="appendToCalculator('8')">8</button>
+                <button onclick="appendToCalculator('9')">9</button>
+                <button onclick="appendToCalculator('+')">+</button>
+                <button onclick="appendToCalculator('4')">4</button>
+                <button onclick="appendToCalculator('5')">5</button>
+                <button onclick="appendToCalculator('6')">6</button>
+                <button onclick="calculate()">=</button>
+                <button onclick="appendToCalculator('1')">1</button>
+                <button onclick="appendToCalculator('2')">2</button>
+                <button onclick="appendToCalculator('3')">3</button>
+                <button onclick="addCalculation()">Save</button>
+                <button onclick="appendToCalculator('0')">0</button>
+                <button onclick="appendToCalculator('.')">.</button>
+                <button onclick="backspace()">⌫</button>
+                <button onclick="appendToCalculator('%')">%</button>
+            </div>
+        </div>
+
+        <div class="section sticky-notes">
+            <h2>Notes</h2>
+            <div id="editor"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <script>
+        // Initialize Quill editor with custom options
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            placeholder: 'Write your notes here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Task List Functions
+        function addTask() {
+            const taskInput = document.getElementById("taskInput");
+            const taskList = document.getElementById("taskList");
+            const taskText = taskInput.value.trim();
+
+            if (taskText !== "") {
+                const li = document.createElement("li");
+                const checkBox = document.createElement("input");
+                checkBox.type = "checkbox";
+                
+                const taskSpan = document.createElement("span");
+                taskSpan.textContent = taskText;
+                
+                li.appendChild(checkBox);
+                li.appendChild(taskSpan);
+                taskList.appendChild(li);
+                
+                taskInput.value = "";
+                
+                // Add completion animation
+                li.style.opacity = "0";
+                requestAnimationFrame(() => {
+                    li.style.transition = "opacity 0.3s ease";
+                    li.style.opacity = "1";
+                });
+            }
+        }
+
+        function completeSelected() {
+            const taskList = document.getElementById("taskList");
+            const tasks = taskList.getElementsByTagName("li");
+            
+            for (let i = tasks.length - 1; i >= 0; i--) {
+                const task = tasks[i];
+                const checkBox = task.querySelector("input[type='checkbox']");
+                
+                if (checkBox.checked) {
+                    task.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                    task.style.opacity = "0";
+                    task.style.transform = "translateX(20px)";
+                    
+                    setTimeout(() => {
+                        task.remove();
+                    }, 300);
+                }
+            }
+        }
+
+        // Calculator Functions
+        function appendToCalculator(value) {
+            const calculatorInput = document.getElementById("calculatorInput");
+            calculatorInput.value += value;
+        }
+
+        function calculate() {
+            const calculatorInput = document.getElementById("calculatorInput");
+            try {
+                const result = eval(calculatorInput.value);
+                calculatorInput.value = Number.isInteger(result) ? result : result.toFixed(2);
+            } catch (error) {
+                calculatorInput.value = 'Error';
+                setTimeout(() => calculatorInput.value = '', 1000);
+            }
+        }
+
+        function clearCalculator() {
+            document.getElementById("calculatorInput").value = '';
+        }
+
+        function backspace() {
+            const calculatorInput = document.getElementById("calculatorInput");
+            calculatorInput.value = calculatorInput.value.slice(0, -1);
+        }
+
+        function addCalculation() {
+            const calculatorInput = document.getElementById("calculatorInput");
+            const taskInput = document.getElementById("taskInput");
+            taskInput.value = calculatorInput.value;
+        }
+
+        // Event Listeners
+        document.getElementById("taskInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                addTask();
+            }
+        });
+
+        document.getElementById("calculatorInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                calculate();
+            }
+        });
+    </script>
+</body>
+</html>
