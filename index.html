@@ -1,376 +1,764 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager Pro</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css">
-    <style>
-        :root {
-            --primary-color: #4CAF50;
-            --primary-hover: #45a049;
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
-            --text-primary: #ffffff;
-            --text-secondary: #B0B0B0;
-            --border-color: #333333;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Manager Pro — Tasks, calculator and notes · Free template</title>
+  <meta name="description" content="Tasks, a smart calculator and rich notes in one page. Everything auto-saves in your browser, with backups, snapshots and a trash. Free template.">
+  <meta name="theme-color" content="#070b07">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322c55e'/%3E%3Cstop offset='1' stop-color='%23a3e635'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M19 33l9 9 18-20' stroke='%23062b12' stroke-width='7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <style>
+    :root {
+      --green: #22c55e; --lime: #a3e635; --amber: #facc15; --teal: #14b8a6; --red: #ef4444;
+      --grad: linear-gradient(100deg, #4ade80 0%, #a3e635 50%, #facc15 100%);
+      --grad-btn: linear-gradient(100deg, #22c55e, #84cc16);
+      --radius: 22px; --ease: cubic-bezier(.22, 1, .36, 1);
+      --display: 'Space Grotesk', system-ui, sans-serif; --body: 'Inter', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #070b07; --bg-2: #0d140d; --surface: rgba(255, 255, 255, .045); --surface-2: rgba(255, 255, 255, .08); --card: #101810;
+      --line: rgba(255, 255, 255, .08); --line-2: rgba(255, 255, 255, .16);
+      --text: #effaf0; --muted: #9db3a0; --shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); --aurora: .4; --input: rgba(0, 0, 0, .35); --on-grad: #062b12;
+    }
+    [data-theme="light"] {
+      --bg: #f6faf5; --bg-2: #edf5ec; --surface: rgba(255, 255, 255, .82); --surface-2: #ffffff; --card: #ffffff;
+      --line: rgba(10, 40, 15, .1); --line-2: rgba(10, 40, 15, .2);
+      --text: #0d1f10; --muted: #557159; --shadow: 0 24px 50px -32px rgba(20, 80, 30, .35); --aurora: .22; --input: #ffffff; --on-grad: #062b12;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); color: var(--text); font-family: var(--body); overflow-x: hidden; transition: background-color .4s var(--ease), color .4s var(--ease); }
+    body > main { flex: 1; width: 100%; }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: -.03em; }
+    ::selection { background: rgba(163, 230, 53, .35); }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .bg-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: var(--aurora); }
+    .b1 { width: 48vw; height: 48vw; left: -14vw; top: -22vw; background: radial-gradient(circle, #22c55e, transparent 65%); animation: d1 26s var(--ease) infinite alternate; }
+    .b2 { width: 40vw; height: 40vw; right: -14vw; top: 8vh; background: radial-gradient(circle, #a3e635, transparent 65%); animation: d2 30s var(--ease) infinite alternate; }
+    .b3 { width: 34vw; height: 34vw; left: 34vw; bottom: -24vw; background: radial-gradient(circle, #facc15, transparent 65%); animation: d3 34s var(--ease) infinite alternate; }
+    .lines { position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px); background-size: 100% 36px; mask-image: linear-gradient(#000, transparent 65%); opacity: .5; }
+    @keyframes d1 { to { transform: translate(10vw, 10vh) scale(1.15); } }
+    @keyframes d2 { to { transform: translate(-12vw, 12vh) scale(.9); } }
+    @keyframes d3 { to { transform: translate(-10vw, -14vh) scale(1.15); } }
 
-        body {
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+    /* ---------- Topbar ---------- */
+    .topbar { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%); background: color-mix(in srgb, var(--bg) 74%, transparent); border-bottom: 1px solid var(--line); }
+    .topbar-inner { display: flex; align-items: center; gap: .7rem; min-height: 68px; padding: .6rem 0; flex-wrap: wrap; }
+    .brand { display: inline-flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.22rem; color: var(--text); text-decoration: none; margin-right: auto; }
+    .brand:hover { color: var(--text); }
+    .brand-mark { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: var(--grad-btn); color: var(--on-grad); font-size: 1.15rem; box-shadow: 0 10px 28px -10px rgba(34, 197, 94, .9); }
+    .brand-x { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .free-pill { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 999px; background: var(--grad-btn); color: var(--on-grad); font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-decoration: none; }
+    .free-pill:hover { color: var(--on-grad); }
+    .icon-btn { position: relative; width: 42px; height: 42px; flex: none; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); display: grid; place-items: center; transition: border-color .2s, transform .3s var(--ease); }
+    .icon-btn:hover { border-color: var(--line-2); transform: translateY(-1px); }
+    .badge-dot { position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--red); color: #fff; font-size: .62rem; font-weight: 700; display: grid; place-items: center; }
+    .save-state { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+    .save-state i { color: var(--green); }
+    .save-state.saving i { color: var(--amber); animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        header {
-            background-color: var(--bg-card);
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    /* ---------- Hero ---------- */
+    .hero { padding: 2.2rem 0 1.4rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+    .hero h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); font-weight: 700; line-height: 1.02; margin: 0; }
+    .hero p { color: var(--muted); margin: .6rem 0 0; max-width: 36rem; }
+    .ring { --p: 0; width: 86px; height: 86px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--lime) calc(var(--p) * 1%), var(--surface-2) 0); position: relative; flex: none; transition: --p .8s; }
+    .ring::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--bg); }
+    .ring b { position: relative; font-family: var(--display); font-size: 1.2rem; }
+    .ring-wrap { display: flex; align-items: center; gap: 1rem; }
+    .ring-wrap small { display: block; color: var(--muted); font-size: .8rem; }
+    .ring-wrap strong { font-family: var(--display); font-size: 1.05rem; }
 
-        header h1 {
-            font-size: 2rem;
-            text-align: center;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
+    .backup-nag { display: none; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .7rem 1rem; border-radius: 14px; margin-bottom: 1rem; background: linear-gradient(100deg, rgba(34, 197, 94, .16), rgba(163, 230, 53, .1)); border: 1px solid rgba(163, 230, 53, .35); font-size: .88rem; }
+    .backup-nag.on { display: flex; }
 
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
+    /* ---------- Panels ---------- */
+    .grid-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .95fr) minmax(0, 1.1fr); gap: 1.1rem; padding-bottom: 2rem; align-items: start; }
+    .panel { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); padding: 1.2rem; animation: rise .7s var(--ease) both; }
+    .panel:nth-child(2) { animation-delay: .08s; } .panel:nth-child(3) { animation-delay: .16s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .panel-head { display: flex; align-items: center; gap: .6rem; margin-bottom: 1rem; }
+    .panel-head h2 { font-size: 1.2rem; font-weight: 700; margin: 0; flex: 1; display: flex; align-items: center; gap: .55rem; }
+    .panel-head h2 .ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--grad-btn); color: var(--on-grad); font-size: .95rem; }
+    .muted { color: var(--muted); }
+    .btn-grad { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; border: 0; border-radius: 12px; padding: 0 1rem; height: 44px; color: var(--on-grad); font-weight: 700; font-family: var(--display); background: var(--grad-btn); box-shadow: 0 14px 30px -14px rgba(34, 197, 94, 1); transition: transform .3s var(--ease); white-space: nowrap; position: relative; overflow: hidden; }
+    .btn-grad::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%); transform: translateX(-120%); transition: transform .8s var(--ease); }
+    .btn-grad:hover { transform: translateY(-2px); color: var(--on-grad); }
+    .btn-grad:hover::after { transform: translateX(120%); }
+    .btn-soft { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 11px; padding: .5rem .9rem; font-weight: 600; font-size: .86rem; transition: border-color .2s, transform .3s var(--ease); }
+    .btn-soft:hover { border-color: var(--line-2); color: var(--text); }
+    .btn-soft.sm { padding: .32rem .65rem; font-size: .78rem; border-radius: 9px; }
+    .btn-soft.danger { color: #f87171; border-color: rgba(239, 68, 68, .35); }
+    .btn-danger-x { display: inline-flex; align-items: center; gap: .4rem; border: 0; border-radius: 9px; padding: .4rem .85rem; background: #ef4444; color: #fff; font-weight: 700; font-size: .84rem; }
+    .field { width: 100%; height: 44px; background: var(--input); border: 1px solid var(--line); border-radius: 12px; color: var(--text); padding: 0 .9rem; outline: none; transition: border-color .2s, box-shadow .2s; }
+    .field:focus { border-color: var(--green); box-shadow: 0 0 0 4px rgba(34, 197, 94, .16); }
+    .field::placeholder { color: var(--muted); }
+    select.field { appearance: none; padding-right: 2rem; background: var(--input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2384cc16' d='M8 11L3 6h10z'/%3E%3C/svg%3E") no-repeat right .7rem center; }
+    select.field option { background: var(--bg-2); color: var(--text); }
+    [data-theme="dark"] input[type="date"] { color-scheme: dark; }
 
-        .section {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
+    /* Tasks */
+    .add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+    .add-opts { display: flex; gap: .5rem; margin-top: .5rem; }
+    .add-opts .field { height: 36px; font-size: .85rem; border-radius: 10px; }
+    .tabs { display: flex; gap: .25rem; padding: .25rem; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); margin: 1rem 0 .8rem; }
+    .tabs button { flex: 1; border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: .84rem; padding: .42rem .5rem; border-radius: 9px; }
+    .tabs button.active { background: var(--grad-btn); color: var(--on-grad); }
+    .tabs .n { opacity: .7; margin-left: .2rem; font-weight: 500; }
+    .task-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .45rem; min-height: 60px; }
+    .task { display: flex; align-items: center; gap: .7rem; padding: .62rem .7rem; border-radius: 13px; background: var(--card); border: 1px solid var(--line); transition: transform .3s var(--ease), border-color .2s, opacity .3s; animation: pop .35s var(--ease) both; }
+    .task:hover { border-color: var(--line-2); }
+    .task.dragging { opacity: .4; }
+    .task.drop-above { box-shadow: 0 -2px 0 var(--lime); }
+    @keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .grip { color: var(--muted); cursor: grab; opacity: .5; }
+    .check { appearance: none; width: 22px; height: 22px; flex: none; border-radius: 7px; border: 2px solid var(--line-2); display: grid; place-items: center; cursor: pointer; transition: all .2s; margin: 0; }
+    .check:checked { background: var(--grad-btn); border-color: transparent; }
+    .check:checked::after { content: ""; width: 6px; height: 11px; border: solid var(--on-grad); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) translate(-1px, -1px); }
+    .t-body { flex: 1; min-width: 0; }
+    .t-text { display: block; word-break: break-word; font-size: .95rem; cursor: text; }
+    .t-text[contenteditable="true"] { outline: none; border-bottom: 1px dashed var(--lime); }
+    .task.done .t-text { text-decoration: line-through; opacity: .55; }
+    .t-meta { display: flex; gap: .45rem; flex-wrap: wrap; margin-top: .15rem; font-size: .72rem; color: var(--muted); }
+    .t-meta .over { color: #f87171; font-weight: 700; }
+    .pdot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .t-act { display: flex; gap: .15rem; opacity: 0; transition: opacity .2s; }
+    .task:hover .t-act, .task:focus-within .t-act { opacity: 1; }
+    .t-act button { border: 0; background: transparent; color: var(--muted); width: 28px; height: 28px; border-radius: 8px; }
+    .t-act button:hover { background: var(--surface-2); color: var(--text); }
+    .empty { text-align: center; color: var(--muted); padding: 1.6rem .5rem; border: 1.5px dashed var(--line-2); border-radius: 14px; font-size: .88rem; }
+    .list-foot { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-top: .8rem; font-size: .8rem; color: var(--muted); }
 
-        .section:hover {
-            transform: translateY(-5px);
-        }
+    /* Calculator */
+    .calc-screen { border-radius: 16px; background: var(--input); border: 1px solid var(--line); padding: .8rem 1rem; text-align: right; margin-bottom: .8rem; }
+    .calc-expr { width: 100%; border: 0; background: transparent; color: var(--muted); font-family: var(--mono); font-size: .95rem; text-align: right; outline: none; }
+    .calc-res { font-family: var(--display); font-size: 2.3rem; font-weight: 700; line-height: 1.1; min-height: 2.6rem; word-break: break-all; }
+    .calc-res.err { color: #f87171; font-size: 1.2rem; }
+    .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: .45rem; }
+    .key { height: 52px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-family: var(--display); font-size: 1.15rem; font-weight: 600; transition: transform .12s, background .2s, border-color .2s; }
+    .key:hover { border-color: var(--line-2); }
+    .key:active { transform: scale(.94); }
+    .key.op { font-size: 1.4rem; color: var(--lime); background: color-mix(in srgb, var(--lime) 8%, var(--card)); }
+    .key.fn { color: var(--muted); }
+    .key.eq { grid-row: span 2; height: auto; background: var(--grad-btn); color: var(--on-grad); border: 0; font-size: 1.5rem; }
+    .key.zero { grid-column: span 2; }
+    .tape-head { display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 .4rem; font-size: .8rem; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .tape { list-style: none; padding: 0; margin: 0; max-height: 170px; overflow: auto; }
+    .tape li { display: flex; align-items: center; gap: .5rem; padding: .35rem .2rem; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: .82rem; }
+    .tape li span { flex: 1; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tape li b { color: var(--text); }
+    .tape button { border: 0; background: transparent; color: var(--muted); padding: 0 .2rem; }
+    .tape button:hover { color: var(--lime); }
 
-        .section h2 {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
+    /* Notes */
+    .note-tabs { display: flex; gap: .35rem; overflow-x: auto; margin-bottom: .7rem; padding-bottom: .15rem; }
+    .note-tab { flex: none; display: inline-flex; align-items: center; gap: .35rem; max-width: 160px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 10px; padding: .35rem .7rem; font-size: .82rem; font-weight: 600; }
+    .note-tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .note-tab.active { background: var(--grad-btn); color: var(--on-grad); border-color: transparent; }
+    .note-tab.add { color: var(--text); }
+    .note-title { width: 100%; border: 0; background: transparent; color: var(--text); font-family: var(--display); font-size: 1.15rem; font-weight: 700; outline: none; margin-bottom: .5rem; }
+    .note-title::placeholder { color: var(--muted); }
+    .editor-wrap { border-radius: 14px; border: 1px solid var(--line); background: var(--input); overflow: hidden; }
+    .ql-toolbar.ql-snow { border: 0 !important; border-bottom: 1px solid var(--line) !important; background: var(--surface); padding: .45rem .6rem !important; }
+    .ql-container.ql-snow { border: 0 !important; font-family: var(--body) !important; font-size: .95rem !important; height: 300px; }
+    .ql-editor { color: var(--text); line-height: 1.6; }
+    .ql-editor.ql-blank::before { color: var(--muted) !important; font-style: normal !important; opacity: .8; }
+    .ql-snow .ql-stroke { stroke: var(--muted) !important; }
+    .ql-snow .ql-fill { fill: var(--muted) !important; }
+    .ql-snow .ql-picker { color: var(--muted) !important; }
+    .ql-snow button:hover .ql-stroke, .ql-snow button.ql-active .ql-stroke { stroke: var(--lime) !important; }
+    .ql-snow button:hover .ql-fill, .ql-snow button.ql-active .ql-fill { fill: var(--lime) !important; }
+    .ql-snow .ql-picker-options { background: var(--bg-2) !important; border-color: var(--line-2) !important; }
+    .ql-snow a { color: var(--lime); }
+    .ql-editor blockquote { border-left-color: var(--lime) !important; }
+    .ql-editor code, .ql-editor .ql-code-block-container { background: var(--surface-2) !important; color: var(--text) !important; border-radius: 6px; }
+    .note-foot { display: flex; justify-content: space-between; gap: .5rem; align-items: center; margin-top: .6rem; font-size: .78rem; color: var(--muted); flex-wrap: wrap; }
 
-        /* Task List Styles */
-        .todo-list input[type="text"] {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
+    /* Modals */
+    .modal-content { background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 22px; box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .8); }
+    .modal-header, .modal-footer { border-color: var(--line); }
+    .modal-title { font-family: var(--display); font-weight: 700; }
+    .btn-close { filter: var(--close-f, invert(1) grayscale(1) brightness(2)); }
+    [data-theme="light"] { --close-f: none; }
+    .modal-backdrop.show { opacity: .65; }
+    .box { padding: 1rem 1.1rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); height: 100%; }
+    .box h3 { font-size: 1rem; font-weight: 700; margin: 0 0 .3rem; display: flex; gap: .5rem; align-items: center; }
+    .box p { color: var(--muted); font-size: .86rem; margin: 0 0 .8rem; }
+    .row-item { display: flex; align-items: center; gap: .7rem; padding: .55rem .2rem; border-bottom: 1px solid var(--line); font-size: .86rem; }
+    .row-item:last-child { border-bottom: 0; }
+    .row-item .grow { flex: 1; min-width: 0; }
+    .row-item .grow div { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row-item small { color: var(--muted); }
+    .confirm-bar { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; width: 100%; padding: .65rem .8rem; border-radius: 12px; background: rgba(239, 68, 68, .12); border: 1px solid rgba(239, 68, 68, .45); font-size: .88rem; }
+    .confirm-bar i { color: #f87171; }
+    .armed { background: #ef4444 !important; border-color: #ef4444 !important; color: #fff !important; }
+    .ok { color: var(--green); } .warn { color: var(--amber); }
 
-        .todo-list button {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-            margin-bottom: 1rem;
-        }
+    .toast-x { position: fixed; left: 50%; bottom: 1.5rem; z-index: 2000; display: flex; align-items: center; gap: .9rem; transform: translate(-50%, calc(100% + 2rem)); opacity: 0; visibility: hidden; padding: .7rem .8rem .7rem 1.1rem; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--text); box-shadow: var(--shadow); font-size: .9rem; transition: transform .5s var(--ease), opacity .3s, visibility .5s; }
+    .toast-x.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+    .toast-x button { border: 0; background: var(--grad-btn); color: var(--on-grad); font-weight: 700; border-radius: 9px; padding: .35rem .8rem; font-size: .82rem; }
+    footer { color: var(--muted); font-size: .82rem; padding: 1.2rem 0 2rem; border-top: 1px solid var(--line); }
+    footer a { color: var(--muted); }
+    .free-tag { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 700; }
 
-        .todo-list button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .todo-list ul {
-            list-style: none;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .todo-list li {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem;
-            background-color: var(--bg-dark);
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
-        }
-
-        .todo-list li:hover {
-            background-color: #1a1a1a;
-        }
-
-        .todo-list li input[type="checkbox"] {
-            margin-right: 1rem;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        /* Calculator Styles */
-        .calculator input[type="text"] {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            text-align: right;
-        }
-
-        .calculator .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calculator button {
-            padding: 1rem;
-            font-size: 1.2rem;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .calculator button:hover {
-            background-color: var(--primary-color);
-            transform: scale(0.98);
-        }
-
-        /* Notes Styles */
-        .sticky-notes .ql-toolbar {
-            background-color: var(--bg-dark);
-            border-radius: 6px 6px 0 0;
-            border: 1px solid var(--border-color);
-        }
-
-        .sticky-notes .ql-container {
-            background-color: var(--bg-dark);
-            border-radius: 0 0 6px 6px;
-            border: 1px solid var(--border-color);
-            border-top: none;
-            height: 300px;
-        }
-
-        .ql-snow.ql-toolbar button:hover,
-        .ql-snow .ql-toolbar button:hover {
-            color: var(--primary-color);
-        }
-
-        .ql-editor {
-            color: var(--text-primary);
-        }
-
-        /* Scrollbar Styles */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    @media (max-width: 1199.98px) { .grid-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .panel.notes { grid-column: 1 / -1; } }
+    @media (max-width: 767.98px) {
+      .grid-main { grid-template-columns: minmax(0, 1fr); }
+      .hide-sm { display: none !important; }
+      .t-act { opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>Task Manager Pro</h1>
-    </header>
-    
-    <div class="container">
-        <div class="section todo-list">
-            <h2>Tasks</h2>
-            <input type="text" id="taskInput" placeholder="What needs to be done?">
-            <button onclick="addTask()">Add Task</button>
-            <ul id="taskList"></ul>
-            <button onclick="completeSelected()">Complete Selected Tasks</button>
-        </div>
+  <div class="bg-fx" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="lines"></div></div>
 
-        <div class="section calculator">
-            <h2>Calculator</h2>
-            <input type="text" id="calculatorInput" readonly>
-            <div class="buttons">
-                <button onclick="clearCalculator()">C</button>
-                <button onclick="appendToCalculator('/')">/</button>
-                <button onclick="appendToCalculator('*')">×</button>
-                <button onclick="appendToCalculator('-')">-</button>
-                <button onclick="appendToCalculator('7')">7</button>
-                <button onclick="appendToCalculator('8')">8</button>
-                <button onclick="appendToCalculator('9')">9</button>
-                <button onclick="appendToCalculator('+')">+</button>
-                <button onclick="appendToCalculator('4')">4</button>
-                <button onclick="appendToCalculator('5')">5</button>
-                <button onclick="appendToCalculator('6')">6</button>
-                <button onclick="calculate()">=</button>
-                <button onclick="appendToCalculator('1')">1</button>
-                <button onclick="appendToCalculator('2')">2</button>
-                <button onclick="appendToCalculator('3')">3</button>
-                <button onclick="addCalculation()">Save</button>
-                <button onclick="appendToCalculator('0')">0</button>
-                <button onclick="appendToCalculator('.')">.</button>
-                <button onclick="backspace()">⌫</button>
-                <button onclick="appendToCalculator('%')">%</button>
-            </div>
-        </div>
+  <header class="topbar">
+    <div class="container-xxl topbar-inner">
+      <a class="brand" href="#" aria-label="Task Manager Pro"><span class="brand-mark"><i class="bi bi-check2-all"></i></span><span>Task Manager <span class="brand-x">Pro</span></span></a>
+      <a class="free-pill hide-sm" href="#about">FREE TEMPLATE</a>
+      <span class="save-state hide-sm" id="saveState"><i class="bi bi-cloud-check-fill"></i><span>Saved</span></span>
+      <button class="icon-btn" type="button" id="trashBtn" title="Trash" aria-label="Trash"><i class="bi bi-trash3"></i><span class="badge-dot" id="trashCount" hidden>0</span></button>
+      <button class="icon-btn" type="button" id="backupBtn" title="Backup & restore" aria-label="Backup and restore"><i class="bi bi-shield-check"></i></button>
+      <button class="icon-btn" type="button" id="themeToggle" aria-label="Toggle theme"><i class="bi bi-sun"></i></button>
+    </div>
+  </header>
 
-        <div class="section sticky-notes">
-            <h2>Notes</h2>
-            <div id="editor"></div>
+  <main class="container-xxl">
+    <section class="hero">
+      <div>
+        <h1 id="greet">Good day.</h1>
+        <p>Your tasks, a smart calculator and notes in one place. Everything saves automatically in this browser.</p>
+      </div>
+      <div class="ring-wrap"><div class="ring" id="ring"><b id="ringPct">0%</b></div><div><small>Today's progress</small><strong id="ringText">No tasks yet</strong></div></div>
+    </section>
+
+    <div class="backup-nag" id="backupNag" role="status"><i class="bi bi-shield-exclamation" style="color:#a3e635"></i><span class="flex-grow-1" id="nagText"></span><button class="btn-soft sm" type="button" id="nagBackup"><i class="bi bi-download"></i> Download backup</button><button class="btn-soft sm" type="button" id="nagHide" aria-label="Dismiss"><i class="bi bi-x-lg"></i></button></div>
+
+    <div class="grid-main">
+      <!-- ===== Tasks ===== -->
+      <section class="panel" aria-labelledby="tasksTitle">
+        <div class="panel-head"><h2 id="tasksTitle"><span class="ic"><i class="bi bi-list-check"></i></span>Tasks</h2><span class="muted small" id="taskCount"></span></div>
+        <form id="addForm" autocomplete="off">
+          <div class="add-row"><label class="visually-hidden" for="taskInput">New task</label><input class="field" id="taskInput" placeholder="What needs to be done?" maxlength="200"><button class="btn-grad" type="submit" aria-label="Add task"><i class="bi bi-plus-lg"></i><span class="hide-sm">Add</span></button></div>
+          <div class="add-opts">
+            <label class="visually-hidden" for="taskPrio">Priority</label><select class="field" id="taskPrio"><option value="normal">● Normal</option><option value="high">● High</option><option value="low">● Low</option></select>
+            <label class="visually-hidden" for="taskDue">Due date</label><input type="date" class="field" id="taskDue">
+          </div>
+        </form>
+        <div class="tabs" role="tablist" aria-label="Task filter">
+          <button type="button" class="active" data-filter="active">Active <span class="n" id="nActive">0</span></button>
+          <button type="button" data-filter="done">Done <span class="n" id="nDone">0</span></button>
+          <button type="button" data-filter="all">All</button>
         </div>
+        <ul class="task-list" id="taskList"></ul>
+        <div class="list-foot"><span class="hide-sm"><i class="bi bi-hand-index"></i> Double-click to edit · drag to reorder</span><span></span><button class="btn-soft sm" type="button" id="clearDone"><i class="bi bi-check2-all"></i> Clear done</button></div>
+      </section>
+
+      <!-- ===== Calculator ===== -->
+      <section class="panel" aria-labelledby="calcTitle">
+        <div class="panel-head"><h2 id="calcTitle"><span class="ic"><i class="bi bi-calculator"></i></span>Calculator</h2></div>
+        <div class="calc-screen">
+          <label class="visually-hidden" for="calcExpr">Expression</label>
+          <input class="calc-expr" id="calcExpr" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0">
+          <div class="calc-res" id="calcRes" aria-live="polite">0</div>
+        </div>
+        <div class="keys" id="keys">
+          <button class="key fn" data-k="C">C</button><button class="key fn" data-k="(">(</button><button class="key fn" data-k=")">)</button><button class="key op" data-k="÷">÷</button>
+          <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button><button class="key op" data-k="×">×</button>
+          <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button><button class="key op" data-k="−">−</button>
+          <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button><button class="key op" data-k="+">+</button>
+          <button class="key fn" data-k="%">%</button><button class="key" data-k="0">0</button><button class="key" data-k=".">.</button><button class="key eq" data-k="=" aria-label="Equals">=</button>
+          <button class="key fn" data-k="⌫" aria-label="Backspace"><i class="bi bi-backspace"></i></button><button class="key fn" data-k="±" aria-label="Toggle sign">±</button><button class="key fn" data-k="task" title="Add result as a task" aria-label="Add result as a task"><i class="bi bi-plus-square"></i></button>
+        </div>
+        <div class="tape-head"><span>History</span><button class="btn-soft sm" type="button" id="tapeClear">Clear</button></div>
+        <ul class="tape" id="tape"></ul>
+      </section>
+
+      <!-- ===== Notes ===== -->
+      <section class="panel notes" aria-labelledby="notesTitle">
+        <div class="panel-head"><h2 id="notesTitle"><span class="ic"><i class="bi bi-journal-text"></i></span>Notes</h2><button class="btn-soft sm" type="button" id="noteDel" title="Move note to trash"><i class="bi bi-trash3"></i></button></div>
+        <div class="note-tabs" id="noteTabs"></div>
+        <label class="visually-hidden" for="noteTitle">Note title</label>
+        <input class="note-title" id="noteTitle" placeholder="Untitled note" maxlength="80">
+        <div class="editor-wrap"><div id="editor"></div></div>
+        <div class="note-foot"><span id="noteStats">0 words</span><span id="noteSaved"></span></div>
+      </section>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
-    <script>
-        // Initialize Quill editor with custom options
-        const quill = new Quill('#editor', {
-            theme: 'snow',
-            placeholder: 'Write your notes here...',
-            modules: {
-                toolbar: [
-                    ['bold', 'italic', 'underline'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['clean']
-                ]
-            }
-        });
+    <section id="about" class="panel mb-4" style="animation:none">
+      <div class="d-flex flex-wrap align-items-center gap-3">
+        <span class="free-pill">100% FREE · OPEN SOURCE</span>
+        <span class="flex-grow-1 muted">Task Manager Pro is a free template: one HTML file with Bootstrap 5 and Quill. Use it, change it and publish it.</span>
+        <a class="btn-soft" href="https://github.com/devlewiso/tasker-manager" target="_blank" rel="noopener noreferrer"><i class="bi bi-github"></i> View code</a>
+      </div>
+    </section>
+  </main>
 
-        // Task List Functions
-        function addTask() {
-            const taskInput = document.getElementById("taskInput");
-            const taskList = document.getElementById("taskList");
-            const taskText = taskInput.value.trim();
+  <footer>
+    <div class="container-xxl d-flex flex-wrap justify-content-between gap-2">
+      <span>© <span id="year"></span> Task Manager Pro · <b class="free-tag">Free template</b> by <a href="https://neuralcodelab.com" target="_blank" rel="noopener">Neural Code Lab</a> · <a href="LICENSE">MIT License</a></span>
+      <span>Data lives only in your browser · <a href="#" id="footBackup">Download a backup</a></span>
+    </div>
+  </footer>
 
-            if (taskText !== "") {
-                const li = document.createElement("li");
-                const checkBox = document.createElement("input");
-                checkBox.type = "checkbox";
-                
-                const taskSpan = document.createElement("span");
-                taskSpan.textContent = taskText;
-                
-                li.appendChild(checkBox);
-                li.appendChild(taskSpan);
-                taskList.appendChild(li);
-                
-                taskInput.value = "";
-                
-                // Add completion animation
-                li.style.opacity = "0";
-                requestAnimationFrame(() => {
-                    li.style.transition = "opacity 0.3s ease";
-                    li.style.opacity = "1";
-                });
-            }
+  <!-- ===== Backup ===== -->
+  <div class="modal fade" id="backupModal" tabindex="-1" aria-labelledby="backupTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+      <div class="modal-header"><h2 class="modal-title fs-5" id="backupTitle"><i class="bi bi-shield-check me-2" style="color:#a3e635"></i>Backup &amp; restore</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+      <div class="modal-body"><div class="row g-3">
+        <div class="col-md-6"><div class="box"><h3><i class="bi bi-download ok"></i>Download backup</h3><p>One JSON file with your tasks, notes, calculator history and trash.</p><button class="btn-grad" type="button" id="exportJson"><i class="bi bi-filetype-json"></i> Backup (.json)</button><div class="small mt-2 muted" id="lastBackup"></div></div></div>
+        <div class="col-md-6"><div class="box"><h3><i class="bi bi-upload" style="color:#a3e635"></i>Restore from file</h3><p>Merge adds what's in the file to what you have. Replace swaps everything (a snapshot is saved first).</p><div class="d-flex gap-2"><button class="btn-soft" type="button" data-import="merge"><i class="bi bi-intersect"></i> Merge</button><button class="btn-soft" type="button" data-import="replace"><i class="bi bi-arrow-repeat"></i> Replace</button></div><input type="file" id="importFile" accept=".json,application/json" hidden></div></div>
+        <div class="col-12"><div class="box"><h3><i class="bi bi-camera" style="color:#facc15"></i>Automatic snapshots</h3><p>The last 10 copies kept in this browser: one per day and one before every restore, import or empty trash.</p><div id="snapList"></div><button class="btn-soft sm mt-2" type="button" id="snapNow"><i class="bi bi-camera"></i> Take snapshot now</button></div></div>
+        <div class="col-12"><div class="box"><h3><i class="bi bi-hdd-stack ok"></i>Where your data lives</h3><p class="mb-2">Saved on every change in two places inside this browser (localStorage + IndexedDB). It survives closing the tab, restarting and updates. It's only lost if you clear this site's browsing data, use a private window or change browser or device — that's what the backup file is for.</p><div class="small" id="storageInfo"></div></div></div>
+      </div></div>
+    </div></div>
+  </div>
+
+  <!-- ===== Trash ===== -->
+  <div class="modal fade" id="trashModal" tabindex="-1" aria-labelledby="trashTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+      <div class="modal-header"><h2 class="modal-title fs-5" id="trashTitle"><i class="bi bi-trash3 me-2" style="color:#f87171"></i>Trash</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+      <div class="modal-body"><p class="small muted">Deleted tasks and notes stay here until you empty the trash.</p><div id="trashList"></div></div>
+      <div class="modal-footer">
+        <button class="btn-soft danger" type="button" id="emptyTrash"><i class="bi bi-trash3"></i> Empty trash</button>
+        <div class="confirm-bar" id="emptyConfirm" hidden><span><i class="bi bi-exclamation-triangle-fill"></i> <span id="emptyMsg"></span></span><span class="d-flex gap-2"><button class="btn-soft sm" type="button" id="emptyCancel">Cancel</button><button class="btn-danger-x" type="button" id="emptyYes"><i class="bi bi-trash3-fill"></i> Delete forever</button></span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="toast-x" id="toast" role="status"><span id="toastText"></span><button type="button" id="toastAction" hidden>Undo</button></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <script>
+  (() => {
+    'use strict';
+    const KEY = 'tmpro:data', SNAP_KEY = 'tmpro:snapshots', PREF_KEY = 'tmpro:prefs';
+    const MAX_SNAPS = 10, MAX_TAPE = 30;
+    const PRIO = { high: { c: '#f87171', w: 0, l: 'High' }, normal: { c: '#a3e635', w: 1, l: 'Normal' }, low: { c: '#60a5fa', w: 2, l: 'Low' } };
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    const now = () => new Date().toISOString();
+    const ls = {
+      get(k, d = null) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+      set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+    };
+    const rel = (iso) => {
+      const s = (Date.now() - new Date(iso)) / 1000;
+      if (s < 60) return 'just now'; if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+      if (s < 86400) return `${Math.floor(s / 3600)} h ago`; if (s < 86400 * 30) return `${Math.floor(s / 86400)} d ago`;
+      return new Date(iso).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+    const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+    const parseDay = (s) => s ? new Date(s + 'T00:00:00') : null;
+    $('#year').textContent = new Date().getFullYear();
+
+    /* ================= Storage ================= */
+    const idb = {
+      db: null,
+      open() { return new Promise((res) => { try { const r = indexedDB.open('tmpro', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => res(); } catch { res(); } }); },
+      get(k) { return new Promise((res) => { if (!this.db) return res(null); try { const q = this.db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result ?? null); q.onerror = () => res(null); } catch { res(null); } }); },
+      set(k, v) { return new Promise((res) => { if (!this.db) return res(false); try { const t = this.db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => res(true); t.onerror = () => res(false); } catch { res(false); } }); },
+    };
+    const blank = () => ({ app: 'task-manager-pro', version: 1, savedAt: null, lastBackupAt: null, tasks: [], notes: [], tape: [], trash: [], activeNote: null });
+    const normTask = (t) => ({ id: String(t.id ?? uid()), text: String(t.text ?? '').slice(0, 200), done: !!t.done, prio: PRIO[t.prio] ? t.prio : 'normal', due: t.due || '', order: Number.isFinite(t.order) ? t.order : Date.now(), createdAt: t.createdAt || now(), doneAt: t.doneAt || null });
+    const normNote = (n) => ({ id: String(n.id ?? uid()), title: String(n.title ?? ''), delta: n.delta || null, html: String(n.html ?? ''), text: String(n.text ?? ''), createdAt: n.createdAt || now(), updatedAt: n.updatedAt || now() });
+    const normalize = (d) => {
+      const o = blank(); if (!d || typeof d !== 'object') return o;
+      o.tasks = (d.tasks || []).map(normTask); o.notes = (d.notes || []).map(normNote);
+      o.tape = Array.isArray(d.tape) ? d.tape.slice(0, MAX_TAPE) : [];
+      o.trash = (d.trash || []).map((x) => ({ kind: x.kind === 'note' ? 'note' : 'task', deletedAt: x.deletedAt || now(), item: x.kind === 'note' ? normNote(x.item || {}) : normTask(x.item || {}) }));
+      o.savedAt = d.savedAt || null; o.lastBackupAt = d.lastBackupAt || null; o.activeNote = d.activeNote || null;
+      return o;
+    };
+    let S = blank(), saveT = null, dirty = false;
+    function save(immediate) {
+      dirty = true; const st = $('#saveState'); st.classList.add('saving'); st.innerHTML = '<i class="bi bi-arrow-repeat"></i><span>Saving…</span>';
+      clearTimeout(saveT);
+      saveT = setTimeout(async () => {
+        S.savedAt = now(); dirty = false;
+        const a = ls.set(KEY, S), b = await idb.set(KEY, JSON.parse(JSON.stringify(S)));
+        st.classList.remove('saving');
+        st.innerHTML = a || b ? '<i class="bi bi-cloud-check-fill"></i><span>Saved</span>' : '<i class="bi bi-exclamation-triangle-fill" style="color:#f87171"></i><span>Not saved</span>';
+        if (!a && !b) toast('Could not save — download a backup now');
+        $('#noteSaved').innerHTML = '<i class="bi bi-check2"></i> Saved';
+      }, immediate ? 0 : 300);
+    }
+    async function load() {
+      await idb.open();
+      const a = ls.get(KEY), b = await idb.get(KEY);
+      const pick = [a, b].filter(Boolean).sort((x, y) => new Date(y.savedAt || 0) - new Date(x.savedAt || 0))[0];
+      S = normalize(pick);
+      if (pick && (!a || !b)) save(true);
+      try { await navigator.storage?.persist?.(); } catch {}
+    }
+    const snaps = () => ls.get(SNAP_KEY, []);
+    function snapshot(reason) {
+      if (!S.tasks.length && !S.notes.length && !S.trash.length) return;
+      const list = snaps(); list.unshift({ id: uid(), at: now(), reason, tasks: S.tasks.length, notes: S.notes.length, data: S });
+      while (list.length > MAX_SNAPS) list.pop();
+      if (!ls.set(SNAP_KEY, list)) { list.splice(3); ls.set(SNAP_KEY, list); }
+    }
+    const dailySnapshot = () => { const l = snaps()[0]; if (!l || Date.now() - new Date(l.at) > 20 * 3600e3) snapshot('Daily snapshot'); };
+
+    /* ================= Prefs / theme / toast ================= */
+    const prefs = Object.assign({ theme: null, filter: 'active', nagHiddenAt: null }, ls.get(PREF_KEY, {}));
+    const savePrefs = () => ls.set(PREF_KEY, prefs);
+    const root = document.documentElement;
+    const applyTheme = (t) => { root.dataset.theme = t; $('#themeToggle').innerHTML = t === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>'; $('meta[name="theme-color"]').content = t === 'dark' ? '#070b07' : '#f6faf5'; };
+    applyTheme(prefs.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+    $('#themeToggle').addEventListener('click', () => { prefs.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; applyTheme(prefs.theme); savePrefs(); });
+    let toastT;
+    function toast(text, action, label = 'Undo') {
+      const el = $('#toast'), btn = $('#toastAction'); $('#toastText').textContent = text;
+      btn.hidden = !action; btn.textContent = label; btn.onclick = () => { el.classList.remove('show'); action && action(); };
+      el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), action ? 6000 : 2600);
+    }
+    const h = new Date().getHours();
+    $('#greet').innerHTML = `${h < 12 ? 'Good morning' : h < 19 ? 'Good afternoon' : 'Good evening'}<span class="brand-x">.</span>`;
+
+    /* ================= Tasks ================= */
+    const isOver = (t) => t.due && !t.done && parseDay(t.due) < today();
+    function renderTasks() {
+      const list = $('#taskList'), f = prefs.filter;
+      $$('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.filter === f));
+      const items = S.tasks.filter((t) => f === 'all' || (f === 'done' ? t.done : !t.done))
+        .sort((a, b) => f === 'done' ? new Date(b.doneAt) - new Date(a.doneAt) : (a.done - b.done) || a.order - b.order);
+      list.innerHTML = items.length ? '' : `<li class="empty"><i class="bi ${f === 'done' ? 'bi-trophy' : 'bi-cup-hot'} fs-4 d-block mb-1"></i>${f === 'done' ? 'Nothing completed yet' : f === 'all' ? 'No tasks yet' : 'All clear! Add a task above.'}</li>`;
+      items.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = 'task' + (t.done ? ' done' : ''); li.dataset.id = t.id; li.draggable = !t.done && f !== 'done';
+        li.style.animationDelay = `${Math.min(i, 12) * 25}ms`;
+        const meta = [`<span class="d-inline-flex align-items-center gap-1"><span class="pdot" style="background:${PRIO[t.prio].c}"></span>${PRIO[t.prio].l}</span>`];
+        if (t.due) meta.push(`<span class="${isOver(t) ? 'over' : ''}"><i class="bi bi-calendar-event"></i> ${esc(parseDay(t.due).toLocaleDateString('en', { month: 'short', day: 'numeric' }))}${isOver(t) ? ' · overdue' : ''}</span>`);
+        if (t.done && t.doneAt) meta.push(`<span><i class="bi bi-check2"></i> ${esc(rel(t.doneAt))}</span>`);
+        li.innerHTML = `${li.draggable ? '<i class="bi bi-grip-vertical grip" aria-hidden="true"></i>' : ''}<input type="checkbox" class="check" ${t.done ? 'checked' : ''} aria-label="Mark as done"><div class="t-body"><span class="t-text">${esc(t.text)}</span><div class="t-meta">${meta.join('')}</div></div><div class="t-act"><button type="button" data-act="edit" aria-label="Edit"><i class="bi bi-pencil"></i></button><button type="button" data-act="del" aria-label="Move to trash"><i class="bi bi-trash3"></i></button></div>`;
+        list.appendChild(li);
+      });
+      const active = S.tasks.filter((t) => !t.done).length, done = S.tasks.length - active;
+      $('#nActive').textContent = active; $('#nDone').textContent = done;
+      $('#taskCount').textContent = S.tasks.length ? `${active} left` : '';
+      $('#clearDone').disabled = !done;
+      const pct = S.tasks.length ? Math.round(done / S.tasks.length * 100) : 0;
+      $('#ring').style.setProperty('--p', pct); $('#ringPct').textContent = pct + '%';
+      $('#ringText').textContent = S.tasks.length ? `${done} of ${S.tasks.length} done` : 'No tasks yet';
+      renderMeta();
+    }
+    function addTask(text, prio = 'normal', due = '') {
+      text = text.trim(); if (!text) return null;
+      const t = normTask({ id: uid(), text, prio, due, order: Math.min(0, ...S.tasks.map((x) => x.order)) - 1 });
+      S.tasks.push(t); save(); renderTasks(); return t;
+    }
+    $('#addForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (addTask($('#taskInput').value, $('#taskPrio').value, $('#taskDue').value)) {
+        $('#taskInput').value = ''; $('#taskDue').value = ''; $('#taskPrio').value = 'normal';
+        if (prefs.filter === 'done') { prefs.filter = 'active'; savePrefs(); renderTasks(); }
+      } else $('#taskInput').focus();
+    });
+    $$('.tabs button').forEach((b) => b.addEventListener('click', () => { prefs.filter = b.dataset.filter; savePrefs(); renderTasks(); }));
+    const findTask = (el) => S.tasks.find((t) => t.id === el.closest('.task')?.dataset.id);
+    $('#taskList').addEventListener('change', (e) => {
+      if (!e.target.matches('.check')) return;
+      const t = findTask(e.target); t.done = e.target.checked; t.doneAt = t.done ? now() : null;
+      save(); setTimeout(renderTasks, t.done ? 250 : 0);
+      if (t.done) toast('Task completed', () => { t.done = false; t.doneAt = null; save(); renderTasks(); });
+    });
+    $('#taskList').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      const t = findTask(b);
+      if (b.dataset.act === 'del') trashItem('task', t);
+      else startEdit(b.closest('.task'));
+    });
+    $('#taskList').addEventListener('dblclick', (e) => { const li = e.target.closest('.task'); if (li && e.target.closest('.t-text')) startEdit(li); });
+    function startEdit(li) {
+      const span = $('.t-text', li), t = findTask(li); if (!t) return;
+      span.contentEditable = 'true'; span.focus();
+      const r = document.createRange(); r.selectNodeContents(span); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      const finish = (ok) => {
+        span.contentEditable = 'false'; span.removeEventListener('keydown', key); span.removeEventListener('blur', blur);
+        const v = span.textContent.trim().slice(0, 200);
+        if (ok && v && v !== t.text) { t.text = v; save(); toast('Task updated'); }
+        renderTasks();
+      };
+      const key = (e) => { if (e.key === 'Enter') { e.preventDefault(); finish(true); } if (e.key === 'Escape') finish(false); };
+      const blur = () => finish(true);
+      span.addEventListener('keydown', key); span.addEventListener('blur', blur);
+    }
+    // Drag to reorder
+    let dragId = null;
+    $('#taskList').addEventListener('dragstart', (e) => { const li = e.target.closest('.task'); if (!li) return; dragId = li.dataset.id; li.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragId); });
+    $('#taskList').addEventListener('dragover', (e) => {
+      e.preventDefault(); $$('.drop-above').forEach((x) => x.classList.remove('drop-above'));
+      const over = e.target.closest('.task'); if (over && over.dataset.id !== dragId) over.classList.add('drop-above');
+    });
+    $('#taskList').addEventListener('dragend', () => { $$('.dragging, .drop-above').forEach((x) => x.classList.remove('dragging', 'drop-above')); });
+    $('#taskList').addEventListener('drop', (e) => {
+      e.preventDefault();
+      const t = S.tasks.find((x) => x.id === (dragId || e.dataTransfer.getData('text/plain'))); dragId = null; if (!t) return;
+      const over = e.target.closest('.task'); const active = S.tasks.filter((x) => !x.done && x.id !== t.id).sort((a, b) => a.order - b.order);
+      const idx = over ? active.findIndex((x) => x.id === over.dataset.id) : active.length;
+      const prev = active[idx - 1], next = active[idx];
+      t.order = prev && next ? (prev.order + next.order) / 2 : prev ? prev.order + 1 : next ? next.order - 1 : 0;
+      save(); renderTasks();
+    });
+    $('#clearDone').addEventListener('click', () => {
+      const done = S.tasks.filter((t) => t.done); if (!done.length) return;
+      S.tasks = S.tasks.filter((t) => !t.done);
+      done.forEach((t) => S.trash.unshift({ kind: 'task', deletedAt: now(), item: t }));
+      save(); renderTasks();
+      toast(`${done.length} completed ${done.length === 1 ? 'task' : 'tasks'} moved to trash`, () => {
+        S.trash = S.trash.filter((x) => !done.includes(x.item)); S.tasks.push(...done); save(); renderTasks();
+      });
+    });
+
+    /* ================= Calculator (safe parser, no eval) ================= */
+    const exprEl = $('#calcExpr'), resEl = $('#calcRes');
+    const fmtNum = (n) => {
+      if (!isFinite(n)) throw new Error('Not a number');
+      const r = Math.round(n * 1e10) / 1e10;
+      return Math.abs(r) >= 1e15 ? r.toExponential(6) : r.toLocaleString('en', { maximumFractionDigits: 10 });
+    };
+    function evaluate(src) {
+      const s = src.replace(/×|x|\*/gi, '*').replace(/÷|\//g, '/').replace(/−/g, '-').replace(/,/g, '').replace(/\s+/g, '');
+      if (!s) return null;
+      let i = 0;
+      const peek = () => s[i];
+      const num = () => {
+        const m = s.slice(i).match(/^(\d+\.?\d*|\.\d+)/);
+        if (!m) throw new Error('Syntax error');
+        i += m[0].length; return parseFloat(m[0]);
+      };
+      // primary: number | ( expr ) | -primary ; optional postfix %
+      const primary = () => {
+        let v, pct = false;
+        if (peek() === '-') { i++; const r = primary(); return { v: -r.v, pct: r.pct }; }
+        if (peek() === '+') { i++; return primary(); }
+        if (peek() === '(') { i++; v = expr(); if (peek() !== ')') throw new Error('Missing )'); i++; }
+        else v = num();
+        while (peek() === '%') { i++; pct = true; v = v / 100; }
+        return { v, pct };
+      };
+      const term = () => {
+        let { v } = primary();
+        while (peek() === '*' || peek() === '/') {
+          const op = s[i++]; const r = primary().v;
+          if (op === '/' && r === 0) throw new Error('Can\'t divide by 0');
+          v = op === '*' ? v * r : v / r;
         }
-
-        function completeSelected() {
-            const taskList = document.getElementById("taskList");
-            const tasks = taskList.getElementsByTagName("li");
-            
-            for (let i = tasks.length - 1; i >= 0; i--) {
-                const task = tasks[i];
-                const checkBox = task.querySelector("input[type='checkbox']");
-                
-                if (checkBox.checked) {
-                    task.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-                    task.style.opacity = "0";
-                    task.style.transform = "translateX(20px)";
-                    
-                    setTimeout(() => {
-                        task.remove();
-                    }, 300);
-                }
-            }
+        return v;
+      };
+      // a + b%  →  a + a·b/100  (like a desk calculator)
+      const expr = () => {
+        let v = term();
+        while (peek() === '+' || peek() === '-') {
+          const op = s[i++]; const start = i;
+          const r = primary();
+          let rv;
+          if (r.pct && peek() !== '*' && peek() !== '/') rv = v * r.v;
+          else { i = start; rv = term(); }
+          v = op === '+' ? v + rv : v - rv;
         }
+        return v;
+      };
+      const v = expr();
+      if (i < s.length) throw new Error('Syntax error');
+      return v;
+    }
+    function preview() {
+      const src = exprEl.value; resEl.classList.remove('err');
+      try { const v = evaluate(src); resEl.textContent = v == null ? '0' : fmtNum(v); }
+      catch { resEl.textContent = resEl.textContent; }
+    }
+    function commit() {
+      const src = exprEl.value.trim(); if (!src) return;
+      try {
+        const v = evaluate(src); const out = fmtNum(v);
+        S.tape.unshift({ id: uid(), expr: src, result: out, raw: v, at: now() }); S.tape.length = Math.min(S.tape.length, MAX_TAPE);
+        exprEl.value = String(Math.round(v * 1e10) / 1e10); resEl.textContent = out; save(); renderTape();
+      } catch (err) { resEl.textContent = err.message; resEl.classList.add('err'); }
+    }
+    function press(k) {
+      const v = exprEl.value;
+      if (k === 'C') { exprEl.value = ''; resEl.textContent = '0'; resEl.classList.remove('err'); return; }
+      if (k === '⌫') exprEl.value = v.slice(0, -1);
+      else if (k === '=') return commit();
+      else if (k === '±') { exprEl.value = v.startsWith('-(') && v.endsWith(')') ? v.slice(2, -1) : v ? `-(${v})` : '-'; }
+      else if (k === 'task') {
+        try { const r = evaluate(v); if (r == null) return; const t = addTask(`${v.trim()} = ${fmtNum(r)}`); if (t) toast('Result added as a task'); } catch { toast('Fix the expression first'); }
+        return;
+      } else exprEl.value = v + k;
+      preview();
+    }
+    $('#keys').addEventListener('click', (e) => { const b = e.target.closest('.key'); if (b) press(b.dataset.k); });
+    exprEl.addEventListener('input', preview);
+    exprEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); commit(); } if (e.key === 'Escape') press('C'); });
+    function renderTape() {
+      $('#tape').innerHTML = S.tape.length ? S.tape.map((t) => `<li data-id="${esc(t.id)}"><span title="${esc(t.expr)}">${esc(t.expr)} =</span><b>${esc(t.result)}</b><button type="button" data-act="use" title="Use result" aria-label="Use result"><i class="bi bi-arrow-return-left"></i></button><button type="button" data-act="copy" title="Copy" aria-label="Copy result"><i class="bi bi-clipboard"></i></button></li>`).join('') : '<li><span>No calculations yet</span></li>';
+      $('#tapeClear').disabled = !S.tape.length;
+    }
+    $('#tape').addEventListener('click', async (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const t = S.tape.find((x) => x.id === b.closest('li').dataset.id); if (!t) return;
+      if (b.dataset.act === 'use') { exprEl.value = String(Math.round(t.raw * 1e10) / 1e10); preview(); exprEl.focus(); }
+      else { try { await navigator.clipboard.writeText(String(t.raw)); toast('Copied'); } catch { toast('Copy not allowed here'); } }
+    });
+    $('#tapeClear').addEventListener('click', () => { const old = S.tape; S.tape = []; save(); renderTape(); toast('History cleared', () => { S.tape = old; save(); renderTape(); }); });
 
-        // Calculator Functions
-        function appendToCalculator(value) {
-            const calculatorInput = document.getElementById("calculatorInput");
-            calculatorInput.value += value;
+    /* ================= Notes (Quill) ================= */
+    const quill = new Quill('#editor', {
+      theme: 'snow', placeholder: 'Write anything… meeting notes, ideas, links',
+      modules: { toolbar: [[{ header: [1, 2, false] }], ['bold', 'italic', 'underline', 'strike'], [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }], ['link', 'blockquote', 'code-block'], ['clean']] },
+    });
+    const curNote = () => S.notes.find((n) => n.id === S.activeNote);
+    function ensureNote() {
+      if (!S.notes.length) S.notes.push(normNote({ id: uid(), title: 'My first note' }));
+      if (!curNote()) S.activeNote = S.notes[0].id;
+    }
+    function renderNoteTabs() {
+      $('#noteTabs').innerHTML = S.notes.map((n) => `<button type="button" class="note-tab ${n.id === S.activeNote ? 'active' : ''}" data-id="${esc(n.id)}"><i class="bi bi-file-earmark-text"></i><span>${esc(n.title || 'Untitled')}</span></button>`).join('') + '<button type="button" class="note-tab add" id="noteAdd" aria-label="New note"><i class="bi bi-plus-lg"></i> New</button>';
+    }
+    let loadingNote = false;
+    function openNote(id) {
+      S.activeNote = id; const n = curNote(); loadingNote = true;
+      $('#noteTitle').value = n.title;
+      if (n.delta) quill.setContents(n.delta, 'silent'); else quill.setText('', 'silent');
+      loadingNote = false; renderNoteTabs(); noteStats();
+      $('#noteSaved').textContent = `Edited ${rel(n.updatedAt)}`;
+    }
+    function noteStats() { const t = quill.getText().trim(); $('#noteStats').textContent = `${t ? t.split(/\s+/).length : 0} words · ${t.length} characters`; }
+    quill.on('text-change', () => {
+      if (loadingNote) return; const n = curNote(); if (!n) return;
+      n.delta = quill.getContents(); n.html = quill.getSemanticHTML(); n.text = quill.getText(); n.updatedAt = now();
+      $('#noteSaved').innerHTML = '<i class="bi bi-arrow-repeat"></i> Saving…'; noteStats(); save();
+    });
+    $('#noteTitle').addEventListener('input', (e) => { const n = curNote(); n.title = e.target.value; n.updatedAt = now(); save(); renderNoteTabs(); });
+    $('#noteTabs').addEventListener('click', (e) => {
+      const b = e.target.closest('.note-tab'); if (!b) return;
+      if (b.id === 'noteAdd') { const n = normNote({ id: uid(), title: '' }); S.notes.push(n); save(); openNote(n.id); $('#noteTitle').focus(); }
+      else openNote(b.dataset.id);
+    });
+    $('#noteDel').addEventListener('click', () => {
+      const n = curNote(); if (!n) return;
+      if (!n.text.trim() && !n.title.trim() && S.notes.length > 1) { S.notes = S.notes.filter((x) => x !== n); ensureNote(); save(); openNote(S.activeNote); return; }
+      trashItem('note', n);
+    });
+
+    /* ================= Trash ================= */
+    function trashItem(kind, item) {
+      if (kind === 'task') S.tasks = S.tasks.filter((x) => x !== item);
+      else { S.notes = S.notes.filter((x) => x !== item); ensureNote(); openNote(S.activeNote); }
+      const entry = { kind, deletedAt: now(), item }; S.trash.unshift(entry); save(); renderTasks();
+      toast(`${kind === 'task' ? 'Task' : 'Note'} moved to trash`, () => restore(entry));
+    }
+    function restore(entry) {
+      S.trash = S.trash.filter((x) => x !== entry);
+      if (entry.kind === 'task') S.tasks.push(entry.item);
+      else { S.notes.push(entry.item); openNote(entry.item.id); }
+      save(); renderTasks(); renderTrash(); toast(`${entry.kind === 'task' ? 'Task' : 'Note'} restored`);
+    }
+    function renderTrash() {
+      $('#trashList').innerHTML = S.trash.length ? S.trash.map((x, i) => `
+        <div class="row-item" data-i="${i}"><i class="bi ${x.kind === 'task' ? 'bi-check2-square' : 'bi-journal-text'}" style="color:#f87171"></i><div class="grow"><div class="fw-semibold">${esc(x.kind === 'task' ? x.item.text : (x.item.title || 'Untitled note'))}</div><small>${x.kind === 'task' ? 'Task' : 'Note'} · deleted ${esc(rel(x.deletedAt))}</small></div>
+        <button class="btn-soft sm" type="button" data-act="restore"><i class="bi bi-arrow-counterclockwise"></i> Restore</button><button class="btn-soft sm danger" type="button" data-act="kill" aria-label="Delete forever"><i class="bi bi-x-lg"></i></button></div>`).join('')
+        : '<div class="text-center py-4 muted"><i class="bi bi-trash3 fs-2 d-block mb-2"></i>Trash is empty</div>';
+      $('#emptyTrash').disabled = !S.trash.length;
+    }
+    function renderMeta() { const b = $('#trashCount'); b.hidden = !S.trash.length; b.textContent = S.trash.length; renderNag(); }
+    const trashModal = new bootstrap.Modal('#trashModal');
+    $('#trashBtn').addEventListener('click', () => { renderTrash(); trashModal.show(); });
+    $('#trashList').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const entry = S.trash[+b.closest('.row-item').dataset.i];
+      if (b.dataset.act === 'restore') return restore(entry);
+      if (!b.classList.contains('armed')) { b.classList.add('armed'); b.innerHTML = 'Delete?'; setTimeout(() => { if (b.isConnected) { b.classList.remove('armed'); b.innerHTML = '<i class="bi bi-x-lg"></i>'; } }, 5000); return; }
+      snapshot('Before deleting an item forever'); S.trash = S.trash.filter((x) => x !== entry); save(); renderTrash(); renderMeta();
+    });
+    const showEmpty = (on) => { $('#emptyConfirm').hidden = !on; $('#emptyTrash').hidden = on; if (on) { $('#emptyMsg').textContent = `Delete ${S.trash.length} ${S.trash.length === 1 ? 'item' : 'items'} forever?`; $('#emptyYes').focus(); } };
+    $('#emptyTrash').addEventListener('click', () => { if (S.trash.length) showEmpty(true); });
+    $('#emptyCancel').addEventListener('click', () => showEmpty(false));
+    $('#emptyYes').addEventListener('click', () => { snapshot('Before emptying trash'); const n = S.trash.length; S.trash = []; save(true); renderTrash(); renderMeta(); showEmpty(false); toast(`Deleted ${n} ${n === 1 ? 'item' : 'items'} forever — a snapshot was saved`); });
+    $('#trashModal').addEventListener('hidden.bs.modal', () => showEmpty(false));
+
+    /* ================= Backup ================= */
+    const backupModal = new bootstrap.Modal('#backupModal');
+    function download(name, content, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500); }
+    const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    function exportJson() {
+      S.lastBackupAt = now(); save(true);
+      download(`task-manager-pro-backup-${stamp()}.json`, JSON.stringify({ ...S, exportedAt: now() }, null, 2), 'application/json');
+      renderBackup(); renderNag(); toast(`Backup downloaded (${S.tasks.length} tasks, ${S.notes.length} notes)`);
+    }
+    $('#exportJson').addEventListener('click', exportJson);
+    $('#nagBackup').addEventListener('click', exportJson);
+    $('#footBackup').addEventListener('click', (e) => { e.preventDefault(); exportJson(); });
+    $('#nagHide').addEventListener('click', () => { prefs.nagHiddenAt = now(); savePrefs(); renderNag(); });
+    function renderNag() {
+      const stale = !S.lastBackupAt || Date.now() - new Date(S.lastBackupAt) > 7 * 864e5;
+      const hidden = prefs.nagHiddenAt && Date.now() - new Date(prefs.nagHiddenAt) < 3 * 864e5;
+      const worth = S.tasks.length >= 3 || S.notes.some((n) => n.text.trim().length > 40);
+      $('#backupNag').classList.toggle('on', worth && stale && !hidden);
+      $('#nagText').textContent = S.lastBackupAt ? `Your last backup was ${rel(S.lastBackupAt)}. Download a fresh copy to stay safe.` : 'Your data lives in this browser. Download a backup file so you never lose it.';
+    }
+    let importMode = 'merge';
+    $$('[data-import]').forEach((b) => b.addEventListener('click', () => { importMode = b.dataset.import; $('#importFile').click(); }));
+    $('#importFile').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+      try {
+        const d = JSON.parse(await f.text());
+        if (!d || !Array.isArray(d.tasks) || !Array.isArray(d.notes)) throw new Error('This file is not a Task Manager Pro backup.');
+        const inc = normalize(d);
+        snapshot(importMode === 'replace' ? 'Before replacing from backup' : 'Before merging a backup');
+        if (importMode === 'replace') { const keep = S.lastBackupAt; S = inc; S.lastBackupAt = keep; }
+        else {
+          inc.tasks.forEach((t) => { if (!S.tasks.some((x) => x.id === t.id)) S.tasks.push(t); });
+          inc.notes.forEach((n) => { const c = S.notes.find((x) => x.id === n.id); if (!c) S.notes.push(n); else if (new Date(n.updatedAt) > new Date(c.updatedAt)) Object.assign(c, n); });
+          inc.tape.forEach((t) => { if (!S.tape.some((x) => x.id === t.id)) S.tape.push(t); });
+          S.tape = S.tape.sort((a, b) => new Date(b.at) - new Date(a.at)).slice(0, MAX_TAPE);
+          inc.trash.forEach((x) => { if (!S.trash.some((y) => y.item.id === x.item.id)) S.trash.push(x); });
         }
+        ensureNote(); save(true); renderAll(); backupModal.hide(); toast(`Backup ${importMode === 'replace' ? 'restored' : 'merged'}`);
+      } catch (err) { toast(err.message.includes('Task Manager') ? err.message : 'Could not read that file'); }
+    });
+    async function renderBackup() {
+      $('#lastBackup').innerHTML = S.lastBackupAt ? `<i class="bi bi-check-circle-fill ok"></i> Last backup ${esc(rel(S.lastBackupAt))}` : '<i class="bi bi-exclamation-circle-fill warn"></i> No backup downloaded yet';
+      const list = snaps();
+      $('#snapList').innerHTML = list.length ? list.map((s) => `<div class="row-item" data-id="${esc(s.id)}"><i class="bi bi-camera" style="color:#facc15"></i><div class="grow"><div class="fw-semibold">${esc(s.reason)}</div><small>${esc(rel(s.at))} · ${esc(s.tasks)} tasks · ${esc(s.notes)} notes</small></div><button class="btn-soft sm" type="button" data-act="restore">Restore</button><button class="btn-soft sm" type="button" data-act="dl" aria-label="Download snapshot"><i class="bi bi-download"></i></button></div>`).join('') : '<p class="small muted mb-0">No snapshots yet. The first one is taken automatically.</p>';
+      let info = '';
+      try { info += (await navigator.storage?.persisted?.()) ? '<i class="bi bi-lock-fill ok"></i> Persistent storage granted.' : '<i class="bi bi-unlock warn"></i> Best-effort storage — keep regular backups.'; const est = await navigator.storage?.estimate?.(); if (est?.usage != null) info += ` · Using ${(est.usage / 1024).toFixed(0)} KB`; } catch {}
+      $('#storageInfo').innerHTML = info + ` · ${S.tasks.length} tasks, ${S.notes.length} notes, ${S.trash.length} in trash`;
+    }
+    $('#backupBtn').addEventListener('click', () => { renderBackup(); backupModal.show(); });
+    $('#snapNow').addEventListener('click', () => { snapshot('Manual snapshot'); renderBackup(); toast('Snapshot saved'); });
+    $('#snapList').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      const s = snaps().find((x) => x.id === b.closest('.row-item').dataset.id); if (!s) return;
+      if (b.dataset.act === 'dl') return download(`task-manager-pro-snapshot-${s.at.slice(0, 16).replace(/[:T]/g, '-')}.json`, JSON.stringify(s.data, null, 2), 'application/json');
+      if (!b.classList.contains('armed')) { b.classList.add('armed'); b.textContent = 'Confirm'; setTimeout(() => { if (b.isConnected) { b.classList.remove('armed'); b.textContent = 'Restore'; } }, 5000); return; }
+      snapshot('Before restoring a snapshot'); const keep = S.lastBackupAt; S = normalize(s.data); S.lastBackupAt = keep; ensureNote();
+      save(true); renderAll(); renderBackup(); toast('Snapshot restored');
+    });
 
-        function calculate() {
-            const calculatorInput = document.getElementById("calculatorInput");
-            try {
-                const result = eval(calculatorInput.value);
-                calculatorInput.value = Number.isInteger(result) ? result : result.toFixed(2);
-            } catch (error) {
-                calculatorInput.value = 'Error';
-                setTimeout(() => calculatorInput.value = '', 1000);
-            }
-        }
-
-        function clearCalculator() {
-            document.getElementById("calculatorInput").value = '';
-        }
-
-        function backspace() {
-            const calculatorInput = document.getElementById("calculatorInput");
-            calculatorInput.value = calculatorInput.value.slice(0, -1);
-        }
-
-        function addCalculation() {
-            const calculatorInput = document.getElementById("calculatorInput");
-            const taskInput = document.getElementById("taskInput");
-            taskInput.value = calculatorInput.value;
-        }
-
-        // Event Listeners
-        document.getElementById("taskInput").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                addTask();
-            }
-        });
-
-        document.getElementById("calculatorInput").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                calculate();
-            }
-        });
-    </script>
+    /* ================= Boot ================= */
+    function renderAll() { renderTasks(); renderTape(); renderNoteTabs(); openNote(S.activeNote); }
+    window.addEventListener('storage', (e) => { if (e.key === KEY && e.newValue && document.activeElement !== quill.root) { try { S = normalize(JSON.parse(e.newValue)); ensureNote(); renderAll(); } catch {} } });
+    window.addEventListener('beforeunload', () => { if (dirty) { S.savedAt = now(); ls.set(KEY, S); } });
+    document.addEventListener('keydown', (e) => {
+      if (e.target.closest('input, textarea, select, [contenteditable="true"], .ql-editor') || document.querySelector('.modal.show')) return;
+      if (e.key.toLowerCase() === 'n') { e.preventDefault(); $('#taskInput').focus(); }
+    });
+    load().then(() => { ensureNote(); dailySnapshot(); renderAll(); });
+  })();
+  </script>
 </body>
 </html>
